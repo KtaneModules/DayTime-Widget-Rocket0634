@@ -28,7 +28,7 @@ public class DayTimeWidget : MonoBehaviour
     bool thisDayofWeekDate;
     bool thisTime;
     bool ampm;
-    internal bool check = false, keep = true;
+    internal bool check = false, keep = true, forced = false;
     internal string serial;
     static List<DayTimeWidget> isCheck = new List<DayTimeWidget>(), checks = new List<DayTimeWidget>();
     public KMBombInfo BombInfo;
@@ -37,6 +37,7 @@ public class DayTimeWidget : MonoBehaviour
     void Start()
     {
         widgetID = widgetIDcounter++;
+        if (forced) return;
         if (maxWidget == 0)
         {
             manufactureDate = false;
@@ -89,40 +90,36 @@ public class DayTimeWidget : MonoBehaviour
     public IEnumerator Activate()
     {
         yield return null;
-        while (checks.Any(x => x.serial == null))
+        if (!forced)
         {
-            var c = checks.Where(x => x.serial == null).First();
-            c.serial = c.BombInfo.QueryWidgets(KMBombInfo.QUERYKEY_GET_SERIAL_NUMBER, null).Select(x => JsonConvert.DeserializeObject<Dictionary<string, string>>(x)).First()["serial"];
-            c.check = false;
-            c.keep = true;
-        }
-        if (!isCheck.Contains(this)) isCheck.Add(this);
-        KeepWidget();
-        if (checks.Where(x => x.serial == serial && new[] { 1, 2, 3 }.Contains(x.widget)).Count() == 0)
-        {
-            widget = 3;
-            thisTime = false;
-            func[widget]();
-        }
-        else if (checks.Where(x => x.serial == serial && new[] { 1, 3 }.Contains(x.widget)).Count() == 0)
-        {
-            widget = 1;
-            thisManufactureDate = false;
-            thisTime = false;
-            thisDayofWeekDate = true;
-        }
-        else if (checks.Where(x => x.serial == serial && new[] { 2, 3 }.Contains(x.widget)).Count() == 0 && checks.Count != 1)
-        {
-            widget = 2;
-            thisDayofWeekDate = false;
-            thisTime = false;
-            thisManufactureDate = true;
-        }
-        check = true;
-        if (checks.All(x => x.check == true))
-        {
-            isCheck.Clear();
-            checks.Clear();
+            while (checks.Any(x => x.serial == null))
+            {
+                var c = checks.Where(x => x.serial == null).First();
+                c.serial = c.BombInfo.QueryWidgets(KMBombInfo.QUERYKEY_GET_SERIAL_NUMBER, null).Select(x => JsonConvert.DeserializeObject<Dictionary<string, string>>(x)).First()["serial"];
+                if (!c.forced) c.check = false;
+                c.keep = true;
+            }
+            if (!isCheck.Contains(this)) isCheck.Add(this);
+            KeepWidget();
+            if (checks.Where(x => x.serial == serial && new[] { 1, 2, 3 }.Contains(x.widget)).Count() == 0)
+            {
+                widget = 3;
+                thisTime = false;
+                func[widget]();
+            }
+            else if (checks.Where(x => x.serial == serial && new[] { 2, 3 }.Contains(x.widget)).Count() == 0)
+            {
+                widget = 2;
+                thisDayofWeekDate = false;
+                thisTime = false;
+                thisManufactureDate = true;
+            }
+            check = true;
+            if (checks.All(x => x.check == true))
+            {
+                isCheck.Clear();
+                checks.Clear();
+            }
         }
         var choose = new[] { ": Date of Manufacture", ": Day of Week", ": Randomized Time" };
         var concat = new List<string> { string.Format("s: {0}, {1}", choose[0].Replace(": ", ""), choose[1].Replace(": ", "")) };
