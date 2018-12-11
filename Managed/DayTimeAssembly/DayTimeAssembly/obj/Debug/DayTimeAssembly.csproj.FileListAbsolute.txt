@@ -1,0 +1,6 @@
+D:\ktane\DayTime Widget\Assets\Plugins\Managed\DayTimeAssembly.dll
+D:\ktane\DayTime Widget\Assets\Plugins\Managed\DayTimeAssembly.pdb
+D:\ktane\DayTime Widget\Managed\DayTimeAssembly\DayTimeAssembly\obj\Debug\DayTimeAssembly.csprojAssemblyReference.cache
+D:\ktane\DayTime Widget\Managed\DayTimeAssembly\DayTimeAssembly\obj\Debug\DayTimeAssembly.csproj.CoreCompileInputs.cache
+D:\ktane\DayTime Widget\Managed\DayTimeAssembly\DayTimeAssembly\obj\Debug\DayTimeAssembly.dll
+D:\ktane\DayTime Widget\Managed\DayTimeAssembly\DayTimeAssembly\obj\Debug\DayTimeAssembly.pdb

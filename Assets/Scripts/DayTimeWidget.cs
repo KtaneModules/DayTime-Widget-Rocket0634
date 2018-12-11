@@ -33,9 +33,12 @@ public class DayTimeWidget : MonoBehaviour
     static List<DayTimeWidget> isCheck = new List<DayTimeWidget>(), checks = new List<DayTimeWidget>();
     public KMBombInfo BombInfo;
     private List<Func<bool>> func;
+    InternationalSettings Settings = new InternationalSettings();
 
     void Start()
     {
+        ModConfig<InternationalSettings> modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
+        Settings = modConfig.Settings;
         widgetID = widgetIDcounter++;
         if (maxWidget == 0)
         {
@@ -139,6 +142,7 @@ public class DayTimeWidget : MonoBehaviour
             dayColor = number[4],
             numberDay = number[3],
             numberMonth = number[2],
+            colorEnabled = true,
             monthColor = 1,
             Time = time.Replace(":", ""),
             AmPm = Texts[8].gameObject.activeSelf ? "AM" : Texts[9].gameObject.activeSelf ? "PM" : "MIL"
@@ -148,7 +152,14 @@ public class DayTimeWidget : MonoBehaviour
         Texts[1].text = "" + widgetData.Year;
         Texts[2].text = widgetData.wordDay;
         Texts[2].color = dayColors[widgetData.dayColor];
-        if (UnityEngine.Random.Range(0, 540) > 235)
+        if (!Settings.EnableColors)
+        {
+            Settings.ForcePreference = true;
+            widgetData.colorEnabled = false;
+            widgetData.dayColor = 5;
+            Texts[2].color = new Color(9 / 255f, 1, 0);
+        }
+        if ((UnityEngine.Random.Range(0, 540) > 235 && !Settings.ForcePreference) || Settings.ForcePreference && Settings.International == Preferred.International)
             International(3);
         else
         {
@@ -188,9 +199,17 @@ public class DayTimeWidget : MonoBehaviour
     private void International(int index)
     {
         Texts[index].text = "" + widgetData.numberDay;
-        Texts[index].color = requiredColors[0];
         Texts[12 / index].text = "" + widgetData.numberMonth;
-        Texts[12 / index].color = requiredColors[1];
+        if (Settings.EnableColors)
+        {
+            Texts[index].color = requiredColors[0];
+            Texts[12 / index].color = requiredColors[1];
+        }
+        else
+        {
+            Texts[index].color = new Color(9 / 255f, 1, 0);
+            Texts[12 / index].color = new Color(9 / 255f, 1, 0);
+        }
     }
 
     public string GetQueryResponse(string queryKey, string queryInfo)
@@ -214,6 +233,7 @@ public class DayTimeWidget : MonoBehaviour
                 { "daycolor", colorNames[widgetData.dayColor] },
                 { "date", "" + widgetData.numberDay },
                 { "month", "" + widgetData.numberMonth },
+                { "colorenabled", "" + widgetData.colorEnabled },
                 { "monthcolor", "" + widgetData.monthColor }
             };
             string responseStr = JsonConvert.SerializeObject(response);
@@ -263,8 +283,23 @@ public class DayTimeWidget : MonoBehaviour
         public int dayColor;
         public int numberDay;
         public int numberMonth;
+        public bool colorEnabled;
         public int monthColor;
         public string Time;
         public string AmPm;
+    }
+
+    class InternationalSettings
+    {
+        public bool EnableColors = true;
+        public bool ForcePreference = false;
+        public string InternationalStrings = "Choose between \"International\" and \"American\"";
+        public Preferred International = Preferred.International;
+    }
+
+    enum Preferred
+    {
+        American,
+        International
     }
 }

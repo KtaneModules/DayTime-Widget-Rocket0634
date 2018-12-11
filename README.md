@@ -1,1 +1,1 @@
-Sample Module
+#[ModKit Wiki](../../wiki)
