@@ -288,11 +288,12 @@ public class DayTimeWidget : MonoBehaviour
         public string Time;
         public string AmPm;
     }
-
+    
     class InternationalSettings
     {
         public bool EnableColors = true;
         public bool ForcePreference = false;
+        public bool EnableStartTime = false;
         public string InternationalStrings = "Choose between \"International\" and \"American\"";
         public Preferred International = Preferred.International;
     }

@@ -19842,6 +19842,8 @@ MonoBehaviour:
   PortWidget: {fileID: 114825884305187518}
   IndicatorWidget: {fileID: 114218596897872382}
   TwoFactorWidget: {fileID: 114885870854110436}
+  DayTimeWidget: {fileID: 114124077044806786, guid: ffbd1fcd26fb43044abeee620d1d18ee,
+    type: 2}
   CustomWidget: {fileID: 114213089377510072}
   HighlightPrefab: {fileID: 100000, guid: d78a484c6e87f1b47b6596ac080fe942, type: 2}
   AudioVolume: 0.25
