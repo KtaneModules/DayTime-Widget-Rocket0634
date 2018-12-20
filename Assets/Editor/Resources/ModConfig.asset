@@ -20,13 +20,34 @@ MonoBehaviour:
     Date of Manufacture: This widget will include a month and a year. The year can
     represent manufacture date or "current date", if desired.
 
+    Expected Keys: ["manufacture"] - int ["year"], string ["month"]
+
 
     Day of the Week: This widget will include a day of the week, and two numbers that
     represent a month and day.
 
+    Expected Keys: ["day"] - string ["day"], string ["daycolor"], int ["date"], int
+    ["month"], bool ["colorenabled"]
 
-    The month featured on both widgets may not always match.'
+
+    The month featured on both widgets may not always match.
+
+
+    One other widget is provided in place for when the other two are not available:
+
+    Randomized Time: a standard widget that simply shows a static time for each widget
+    present.
+
+    Expected Keys: ["time"] - string ["time"] (four digits, may start with zero),
+    bool ["am"], bool ["pm"]
+
+
+    Also includes Starting Time, for use in Zen Mode.
+
+
+    This mod is designed for league usage in mind, but may be used in whatever situation
+    seems necessary.'
   version: N/A
   outputFolder: C:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody
     Explodes\Mods
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 00192bc3e6e682e4f89072a23259c9db, type: 3}
