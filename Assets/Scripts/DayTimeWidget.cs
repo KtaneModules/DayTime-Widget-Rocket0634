@@ -303,7 +303,7 @@ public class DayTimeWidget : MonoBehaviour
         public bool EnableColors = true;
         public bool ForcePreference = false;
         public bool EnableStartTime = false;
-        public string InternationalStrings = "Choose between \"International\" and \"American\"";
+        public string InternationalStrings = "Choose between 'International' and 'American'";
         public Preferred International = Preferred.International;
     }
 
