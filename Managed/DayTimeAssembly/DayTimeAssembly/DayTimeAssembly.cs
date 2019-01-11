@@ -57,7 +57,6 @@ public class DayTimeAssembly : MonoBehaviour
         {
             if (modwidget == null) break;
             DebugLog("Adding required widget");
-            DebugLog(Settings.EnableStartTime.ToString() + "" + (startWidget == null).ToString() );
             if (!g.RequiredWidgets.Contains(modwidget))
                 g.RequiredWidgets.Add(modwidget);
             if (!g.RequiredWidgets.Contains(startWidget) && Settings.EnableStartTime)
@@ -70,7 +69,7 @@ public class DayTimeAssembly : MonoBehaviour
     void DebugLog(string log, int i = 0, params object[] logData)
     {
         log = string.Format(log, logData);
-        Debug.LogFormat("[Daytime Widget #{0}] {1}", i, log);
+        Debug.LogFormat("[Daytime Widget Manager] {1}", i, log);
     }
 
     class InternationalSettings

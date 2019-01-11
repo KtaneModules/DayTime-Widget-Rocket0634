@@ -182,6 +182,7 @@ public class DayTimeWidget : MonoBehaviour
         {
             StartCoroutine(Blinking());
         }
+        ShowWidget();
         //BombInfo.OnBombSolved += delegate () { manufactureDate = false; dayofWeekDate = false; };
         //BombInfo.OnBombExploded += delegate () { manufactureDate = false; dayofWeekDate = false; };
     }
@@ -194,6 +195,14 @@ public class DayTimeWidget : MonoBehaviour
             if (pass.Count() > 0) isCheck.Remove(pass.First());
             if (isCheck.All(x => x.keep)) keep = false;
         }
+    }
+
+    private void ShowWidget()
+    {
+        var order = widgetData.monthColor == 0 ? widgetData.numberMonth + "-" + widgetData.numberDay + " (MM/DD)" : widgetData.numberDay + "-" + widgetData.numberMonth + " (DD/MM)";
+        var strings = new[] { "Chosen time: " + time + widgetData.AmPm, "Day of the week: " + (Settings.EnableColors ? "(colors enabled) " : "(colors not enabled) ") + colorNames[widgetData.dayColor] + " " + widgetData.wordDay + "-" + order, "Manufacture Date: " + widgetData.Month + "-" + widgetData.Year, ""};
+        strings[3] = strings[1] + " / " + strings[2];
+        DebugLog(strings[widget]);
     }
 
     private void International(int index)

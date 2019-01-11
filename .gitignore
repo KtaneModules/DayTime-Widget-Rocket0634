@@ -31,3 +31,7 @@ sysinfo.txt
 Assets/Generated
 Gen
 
+Managed/DayTimeAssembly/DayTimeAssembly/obj/Debug/DayTimeAssembly.dll
+Managed/DayTimeAssembly/DayTimeAssembly/obj/Debug/DayTimeAssembly.pdb
+Managed/DayTimeAssembly/DayTimeAssembly/obj/Debug/DayTimeAssembly.csprojAssemblyReference.cache
+Managed/DayTimeAssembly/.vs/DayTimeAssembly/v15/Server/sqlite3/storage.ide-shm
