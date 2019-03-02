@@ -18,7 +18,7 @@ public class DayTimeAssembly : MonoBehaviour
     private Coroutine AddWidget;
     public KMWidget dayTimeWidget;
     public StartTimeWidget startTimeWidget;
-    private InternationalSettings Settings = new InternationalSettings();
+    public InternationalSettings Settings = new InternationalSettings();
 
     private void OnStateChange(KMGameInfo.State state)
     {
@@ -30,6 +30,8 @@ public class DayTimeAssembly : MonoBehaviour
         if ((prevState == KMGameInfo.State.Setup || prevState == KMGameInfo.State.PostGame) && CurrentState == KMGameInfo.State.Transitioning && state == KMGameInfo.State.Transitioning)
         {
             AddWidget = StartCoroutine(AddWidgetToBomb(dayTimeWidget, startTimeWidget.GetComponent<KMWidget>()));
+            ModConfig<InternationalSettings> modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
+            if (Settings != modConfig.Settings) Settings = modConfig.Settings;
         }
         prevState = CurrentState;
         CurrentState = state;
@@ -71,13 +73,19 @@ public class DayTimeAssembly : MonoBehaviour
         log = string.Format(log, logData);
         Debug.LogFormat("[Daytime Widget Manager] {1}", i, log);
     }
+}
 
-    class InternationalSettings
-    {
-        public bool EnableColors;
-        public bool ForcePreference;
-        public bool EnableStartTime;
-        public string InternationalStrings;
-        public string International;
-    }
+public class InternationalSettings
+{
+    public bool EnableColors = true;
+    public bool ForcePreference = false;
+    public bool EnableStartTime = false;
+    public string InternationalStrings = "Choose between 'International' and 'American'";
+    public Preferred International = Preferred.International;
+}
+
+public enum Preferred
+{
+    American,
+    International
 }

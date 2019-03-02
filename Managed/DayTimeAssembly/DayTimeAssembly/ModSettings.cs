@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿extern alias Newton;
+using Newton::Newtonsoft.Json;
+using Newton::Newtonsoft.Json.Converters;
 using System;
 using System.IO;
 using UnityEngine;
@@ -35,8 +36,14 @@ class ModConfig<T>
 
                 return JsonConvert.DeserializeObject<T>(File.ReadAllText(SettingsPath));
             }
-            catch
+            catch (Exception ex)
             {
+                if (ex is JsonSerializationException)
+                {
+                    Debug.LogFormat("[DayTime] An error was detected within the settings file, resetting...");
+                    File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(Activator.CreateInstance<T>(), Formatting.Indented, new StringEnumConverter()));
+                    return JsonConvert.DeserializeObject<T>(File.ReadAllText(SettingsPath));
+                }
                 return Activator.CreateInstance<T>();
             }
         }
