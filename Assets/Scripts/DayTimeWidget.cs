@@ -33,11 +33,11 @@ public class DayTimeWidget : MonoBehaviour
     static List<DayTimeWidget> isCheck = new List<DayTimeWidget>(), checks = new List<DayTimeWidget>();
     public KMBombInfo BombInfo;
     private List<Func<bool>> func;
-    //InternationalSettings Settings;
+    InternationalSettings Settings;
 
     void Start()
     {
-        //Settings = DayTimeAssembly.Instance.Settings;
+        Settings = DayTimeAssembly.Instance.Settings;
         widgetID = widgetIDcounter++;
         if (maxWidget == 0)
         {
@@ -151,7 +151,7 @@ public class DayTimeWidget : MonoBehaviour
         Texts[1].text = "" + widgetData.Year;
         Texts[2].text = widgetData.wordDay;
         Texts[2].color = dayColors[widgetData.dayColor];
-        /*if (!Settings.EnableColors)
+        if (!Settings.EnableColors)
         {
             Settings.ForcePreference = true;
             widgetData.colorEnabled = false;
@@ -164,7 +164,7 @@ public class DayTimeWidget : MonoBehaviour
         {
             International(4);
             widgetData.monthColor = 0;
-        }*/
+        }
         Texts[5].text = "" + time[0] + time[1];
         Texts[7].text = "" + time[3] + time[4];
         var inactive = transform.GetComponentsInChildren<Transform>(true).Where(x => !x.gameObject.activeSelf).ToList();
@@ -198,22 +198,22 @@ public class DayTimeWidget : MonoBehaviour
 
     private void ShowWidget()
     {
-        /*var order = widgetData.monthColor == 0 ? widgetData.numberMonth + "-" + widgetData.numberDay + " (MM/DD)" : widgetData.numberDay + "-" + widgetData.numberMonth + " (DD/MM)";
+        var order = widgetData.monthColor == 0 ? widgetData.numberMonth + "-" + widgetData.numberDay + " (MM/DD)" : widgetData.numberDay + "-" + widgetData.numberMonth + " (DD/MM)";
         var strings = new[] { "Chosen time: " + time + widgetData.AmPm, "Day of the week: " + (Settings.EnableColors ? "(colors enabled) " : "(colors not enabled) ") + colorNames[widgetData.dayColor] + " " + widgetData.wordDay + "-" + order, "Manufacture Date: " + widgetData.Month + "-" + widgetData.Year, ""};
         strings[3] = strings[1] + " / " + strings[2];
-        DebugLog(strings[widget]);*/
+        DebugLog(strings[widget]);
     }
 
     private void International(int index)
     {
         Texts[index].text = "" + widgetData.numberDay;
         Texts[12 / index].text = "" + widgetData.numberMonth;
-        /*if (Settings.EnableColors)
+        if (Settings.EnableColors)
         {
             Texts[index].color = requiredColors[0];
             Texts[12 / index].color = requiredColors[1];
         }
-        else*/
+        else
         {
             Texts[index].color = new Color(9 / 255f, 1, 0);
             Texts[12 / index].color = new Color(9 / 255f, 1, 0);

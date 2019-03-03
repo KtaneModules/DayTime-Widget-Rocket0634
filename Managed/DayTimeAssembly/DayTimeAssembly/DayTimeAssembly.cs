@@ -7,9 +7,9 @@ public class DayTimeAssembly : MonoBehaviour
     private KMGameInfo gameInfo = null;
     private void Start()
     {
+        Instance = this;
         gameInfo = GetComponent<KMGameInfo>();
         gameInfo.OnStateChange += OnStateChange;
-        ModConfig<InternationalSettings> modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
         Settings = modConfig.Settings;
     }
 
@@ -19,6 +19,8 @@ public class DayTimeAssembly : MonoBehaviour
     public KMWidget dayTimeWidget;
     public StartTimeWidget startTimeWidget;
     public InternationalSettings Settings = new InternationalSettings();
+    ModConfig<InternationalSettings> modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
+    public static DayTimeAssembly Instance;
 
     private void OnStateChange(KMGameInfo.State state)
     {
@@ -30,7 +32,6 @@ public class DayTimeAssembly : MonoBehaviour
         if ((prevState == KMGameInfo.State.Setup || prevState == KMGameInfo.State.PostGame) && CurrentState == KMGameInfo.State.Transitioning && state == KMGameInfo.State.Transitioning)
         {
             AddWidget = StartCoroutine(AddWidgetToBomb(dayTimeWidget, startTimeWidget.GetComponent<KMWidget>()));
-            ModConfig<InternationalSettings> modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
             if (Settings != modConfig.Settings) Settings = modConfig.Settings;
         }
         prevState = CurrentState;
