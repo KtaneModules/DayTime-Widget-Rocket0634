@@ -39,10 +39,12 @@
     <Reference Include="KMFramework">
       <HintPath>..\..\..\Assets\Plugins\Managed\KMFramework.dll</HintPath>
       <Private>False</Private>
+      <Aliases>global</Aliases>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\ktanemodkit-master\Assets\Plugins\Managed\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Assets\Plugins\Managed\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
       <Aliases>Newton</Aliases>
     </Reference>
     <Reference Include="System" />
