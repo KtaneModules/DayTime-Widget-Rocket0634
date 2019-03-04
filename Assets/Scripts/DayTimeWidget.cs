@@ -33,11 +33,12 @@ public class DayTimeWidget : MonoBehaviour
     static List<DayTimeWidget> isCheck = new List<DayTimeWidget>(), checks = new List<DayTimeWidget>();
     public KMBombInfo BombInfo;
     private List<Func<bool>> func;
-    InternationalSettings Settings;
+    InternationalSettings Settings = new InternationalSettings();
 
     void Start()
     {
-        Settings = DayTimeAssembly.Instance.Settings;
+        var modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
+        Settings = modConfig.Settings;
         widgetID = widgetIDcounter++;
         if (maxWidget == 0)
         {
