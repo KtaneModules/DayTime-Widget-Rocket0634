@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using KModkit;
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,9 +29,7 @@ public class DayTimeWidget : MonoBehaviour
     bool thisDayofWeekDate;
     bool thisTime;
     bool ampm;
-    internal bool check = false, keep = true;
     internal string serial;
-    static List<DayTimeWidget> isCheck = new List<DayTimeWidget>(), checks = new List<DayTimeWidget>();
     public KMBombInfo BombInfo;
     private List<Func<bool>> func;
     InternationalSettings Settings = new InternationalSettings();
@@ -46,7 +45,7 @@ public class DayTimeWidget : MonoBehaviour
             dayofWeekDate = false;
         }
         maxWidget++;
-        GetComponent<KMWidget>().OnWidgetActivate += delegate { StartCoroutine(Activate()); };
+        GetComponent<KMWidget>().OnWidgetActivate += delegate { Activate(); };
         for (int i = 0; i < number.Count(); i++)
         {
             if (i == 3)
@@ -72,73 +71,27 @@ public class DayTimeWidget : MonoBehaviour
         func = new List<Func<bool>> { () => thisTime = true, () => { thisDayofWeekDate = true; dayofWeekDate = true; return true; },
         () => { thisManufactureDate = true; manufactureDate = true; return true; } };
         func.Add(() => func[1]() && func[2]());
-        isCheck.Add(this);
-        KeepWidget();
-        var either = !manufactureDate || !dayofWeekDate;
-        if (either)
+        if (!manufactureDate || !dayofWeekDate)
         {
-            if (!manufactureDate && !dayofWeekDate) widget = UnityEngine.Random.Range(0, 4);
-            else if (!manufactureDate)
-                widget = UnityEngine.Random.Range(0, 2) * 2;
+            if (!manufactureDate && !dayofWeekDate) widget = UnityEngine.Random.Range(0, 2) * 2 + 1;
             else if (!dayofWeekDate)
-                widget = UnityEngine.Random.Range(0, 2);
+                widget = 1;
+            else if (!manufactureDate)
+                widget = 2;
         }
-        check = true;
+        else widget = 0;
         func[widget]();
-        checks.Add(this);
-    }
-
-    //This happens when the bomb turns on, don't turn on any lights or unlit shaders until activate
-    public IEnumerator Activate()
-    {
-        yield return null;
-        while (checks.Any(x => x.serial == null))
-        {
-            var c = checks.Where(x => x.serial == null).First();
-            c.serial = c.BombInfo.QueryWidgets(KMBombInfo.QUERYKEY_GET_SERIAL_NUMBER, null).Select(x => JsonConvert.DeserializeObject<Dictionary<string, string>>(x)).First()["serial"];
-            c.check = false;
-            c.keep = true;
-        }
-        if (!isCheck.Contains(this)) isCheck.Add(this);
-        KeepWidget();
-        if (checks.Where(x => x.serial == serial && new[] { 1, 2, 3 }.Contains(x.widget)).Count() == 0)
-        {
-            widget = 3;
-            thisTime = false;
-            func[widget]();
-        }
-        else if (checks.Where(x => x.serial == serial && new[] { 1, 3 }.Contains(x.widget)).Count() == 0)
-        {
-            widget = 1;
-            thisManufactureDate = false;
-            thisTime = false;
-            thisDayofWeekDate = true;
-        }
-        else if (checks.Where(x => x.serial == serial && new[] { 2, 3 }.Contains(x.widget)).Count() == 0 && checks.Count != 1)
-        {
-            widget = 2;
-            thisDayofWeekDate = false;
-            thisTime = false;
-            thisManufactureDate = true;
-        }
-        check = true;
-        if (checks.All(x => x.check == true))
-        {
-            isCheck.Clear();
-            checks.Clear();
-        }
         var choose = new[] { ": Date of Manufacture", ": Day of Week", ": Randomized Time" };
         var concat = new List<string> { string.Format("s: {0}, {1}", choose[0].Replace(": ", ""), choose[1].Replace(": ", "")) };
         choose = choose.Concat(concat).ToArray();
         var t = widget == 3 ? widget : 2 - widget;
         DebugLog("Chosen widget{0}", choose[t]);
         GetComponent<KMWidget>().OnQueryRequest += GetQueryResponse;
-        maxWidget = 0;
         widgetData = new Data
         {
             Month = months[number[0]],
             Year = number[1],
-            wordDay = days[number[4]],
+            wordDay = number[4],
             dayColor = number[4],
             numberDay = number[3],
             numberMonth = number[2],
@@ -147,10 +100,16 @@ public class DayTimeWidget : MonoBehaviour
             Time = time.Replace(":", ""),
             AmPm = Texts[8].gameObject.activeSelf ? "AM" : Texts[9].gameObject.activeSelf ? "PM" : "MIL"
         };
+    }
+
+    //This happens when the bomb turns on, don't turn on any lights or unlit shaders until activate
+    public void Activate()
+    {
+        maxWidget = 0;
 
         Texts[0].text = widgetData.Month;
         Texts[1].text = "" + widgetData.Year;
-        Texts[2].text = widgetData.wordDay;
+        Texts[2].text = days[widgetData.wordDay];
         Texts[2].color = dayColors[widgetData.dayColor];
         if (!Settings.EnableColors)
         {
@@ -187,20 +146,10 @@ public class DayTimeWidget : MonoBehaviour
         //BombInfo.OnBombExploded += delegate () { manufactureDate = false; dayofWeekDate = false; };
     }
 
-    private void KeepWidget()
-    {
-        while (isCheck.Contains(this) && keep)
-        {
-            var pass = isCheck.Where(x => x.check == true);
-            if (pass.Count() > 0) isCheck.Remove(pass.First());
-            if (isCheck.All(x => x.keep)) keep = false;
-        }
-    }
-
     private void ShowWidget()
     {
         var order = widgetData.monthColor == 0 ? widgetData.numberMonth + "-" + widgetData.numberDay + " (MM/DD)" : widgetData.numberDay + "-" + widgetData.numberMonth + " (DD/MM)";
-        var strings = new[] { "Chosen time: " + time + widgetData.AmPm, "Day of the week: " + (Settings.EnableColors ? "(colors enabled) " : "(colors not enabled) ") + colorNames[widgetData.dayColor] + " " + widgetData.wordDay + "-" + order, "Manufacture Date: " + widgetData.Month + "-" + widgetData.Year, ""};
+        var strings = new[] { "Chosen time: " + time + widgetData.AmPm, "Day of the week: " + (Settings.EnableColors ? "(colors enabled) " : "(colors not enabled) ") + colorNames[widgetData.dayColor] + " " + days[widgetData.wordDay] + "-" + order, "Manufacture Date: " + widgetData.Month + "-" + widgetData.Year, ""};
         strings[3] = strings[1] + " / " + strings[2];
         DebugLog(strings[widget]);
     }
@@ -238,7 +187,7 @@ public class DayTimeWidget : MonoBehaviour
         {
             Dictionary<string, string> response = new Dictionary<string, string>
             {
-                { "day", widgetData.wordDay },
+                { "day", Enum.GetName(typeof(DayOfWeek), widgetData.wordDay) },
                 { "daycolor", colorNames[widgetData.dayColor] },
                 { "date", "" + widgetData.numberDay },
                 { "month", "" + widgetData.numberMonth },
@@ -273,8 +222,12 @@ public class DayTimeWidget : MonoBehaviour
             first = false;
             var time = (int)BombInfo.GetTime();
             yield return new WaitUntil(() => time != (int)BombInfo.GetTime());
+            Func<bool>[] f = { () => BombInfo.GetTime() - (int)BombInfo.GetTime() < .325,
+            () => (int)BombInfo.GetTime() + 1 - BombInfo.GetTime() < .325};
+            var i = 0;
+            if ((int)BombInfo.GetTime() - time > 0 || time - BombInfo.GetTime() > 2) i = 1;
             Texts[6].gameObject.SetActive(true);
-            yield return new WaitUntil(() => BombInfo.GetTime() - (int)BombInfo.GetTime() < .325);
+            yield return new WaitUntil(() => f[i]());
         }
     }
 
@@ -288,7 +241,7 @@ public class DayTimeWidget : MonoBehaviour
     {
         public string Month;
         public int Year;
-        public string wordDay;
+        public int wordDay;
         public int dayColor;
         public int numberDay;
         public int numberMonth;
