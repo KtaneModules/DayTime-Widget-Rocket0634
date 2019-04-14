@@ -38,6 +38,7 @@ public class DayTimeWidget : MonoBehaviour
     {
         var modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
         Settings = modConfig.Settings;
+        modConfig.Settings = Settings;
         widgetID = widgetIDcounter++;
         if (maxWidget == 0)
         {
@@ -236,6 +237,43 @@ public class DayTimeWidget : MonoBehaviour
         var logData = string.Format(log, args);
         Debug.LogFormat("[DayTime #{0}] {1}", widgetID, logData);
     }
+
+    static Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]
+    {
+        new Dictionary<string, object>
+        {
+            { "Filename", "InternationalSettings.json" },
+            { "Name", "Day of Week Widget" },
+            { "Listings", new List<Dictionary<string, object>> {
+                new Dictionary<string, object>
+                {
+                    { "Key", "EnableColors" },
+                    { "Text", "Enable Colors    " },
+                    { "Description", "Determine if each day uses a different color, or if the text is always one color.\n(Note, if disabled, Preference will always be forced.)" }
+                },
+                new Dictionary<string, object>
+                {
+                    { "Key", "ForcePreference" },
+                    { "Text", "Force Preference" },
+                    { "Description", "By default, the Day of Week widget alters between International and American layouts for the date.\nSetting this to true will always force the preferred layout." }
+                },
+                new Dictionary<string, object>
+                {
+                    { "Key", "International" },
+                    { "Type", "Dropdown" },
+                    { "Text", "Preferred layout  " },
+                    { "Description", "Choose which layout is preferred if\ncolors are disabled or preference is forced." },
+                    { "DropdownItems", new List<object>{ "American", "International" } }
+                },
+                new Dictionary<string, object>
+                {
+                    { "Key", "EnableStartTime" },
+                    { "Text", "Start Time Widget" },
+                    { "Description", "A separate widget that shows the start time of the bomb that modules are looking for.\nFor use in Zen Mode." }
+                }
+            }}
+        }
+    };
 
     class Data
     {
