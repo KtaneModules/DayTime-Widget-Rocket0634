@@ -1,27 +1,24 @@
-﻿extern alias Newton;
-using Newton::Newtonsoft.Json;
-using Newton::Newtonsoft.Json.Converters;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.IO;
 using UnityEngine;
 
-[JsonConverter(typeof(StringEnumConverter))]
 public class ModConfig<T>
 {
-    public ModConfig(string name)
+    public ModConfig(string filename)
     {
-        _filename = name;
+        SettingsPath = Path.Combine(Path.Combine(Application.persistentDataPath, "Modsettings"), filename + ".json");
     }
 
-    string _filename = null;
+    readonly string SettingsPath = null;
 
-    string SettingsPath
+    public string SerializeSettings(T settings)
     {
-        get
-        {
-            return Path.Combine(Path.Combine(Application.persistentDataPath, "Modsettings"), _filename + ".json");
-        }
+        return JsonConvert.SerializeObject(settings, Formatting.Indented, new StringEnumConverter());
     }
+
+    static readonly object settingsFileLock = new object();
 
     public T Settings
     {
@@ -29,21 +26,23 @@ public class ModConfig<T>
         {
             try
             {
-                if (!File.Exists(SettingsPath))
+                lock (settingsFileLock)
                 {
-                    File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(Activator.CreateInstance<T>(), Formatting.Indented, new StringEnumConverter()));
-                }
+                    if (!File.Exists(SettingsPath))
+                    {
+                        File.WriteAllText(SettingsPath, SerializeSettings(Activator.CreateInstance<T>()));
+                    }
 
-                return JsonConvert.DeserializeObject<T>(File.ReadAllText(SettingsPath));
-            }
-            catch (Exception ex)
-            {
-                if (ex is JsonSerializationException)
-                {
-                    Debug.LogFormat("[DayTime] An error was detected within the settings file, resetting...");
-                    File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(Activator.CreateInstance<T>(), Formatting.Indented, new StringEnumConverter()));
-                    return JsonConvert.DeserializeObject<T>(File.ReadAllText(SettingsPath));
+                    T deserialized = JsonConvert.DeserializeObject<T>(
+                        File.ReadAllText(SettingsPath),
+                        new JsonSerializerSettings { Error = (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args) => args.ErrorContext.Handled = true }
+                    );
+                    return deserialized != null ? deserialized : Activator.CreateInstance<T>();
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
                 return Activator.CreateInstance<T>();
             }
         }
@@ -52,13 +51,16 @@ public class ModConfig<T>
         {
             if (value.GetType() == typeof(T))
             {
-                File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(value, Formatting.Indented, new StringEnumConverter()));
+                lock (settingsFileLock)
+                {
+                    File.WriteAllText(SettingsPath, SerializeSettings(value));
+                }
             }
         }
     }
 
     public override string ToString()
     {
-        return JsonConvert.SerializeObject(Settings, Formatting.Indented);
+        return SerializeSettings(Settings);
     }
 }

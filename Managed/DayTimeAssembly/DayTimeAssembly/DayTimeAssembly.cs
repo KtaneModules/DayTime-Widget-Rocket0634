@@ -10,6 +10,7 @@ public class DayTimeAssembly : MonoBehaviour
         Instance = this;
         gameInfo = GetComponent<KMGameInfo>();
         gameInfo.OnStateChange += OnStateChange;
+        modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
         ReadSettings();
     }
 
@@ -25,7 +26,7 @@ public class DayTimeAssembly : MonoBehaviour
     public KMWidget dayTimeWidget;
     public StartTimeWidget startTimeWidget;
     public InternationalSettings Settings = new InternationalSettings();
-    ModConfig<InternationalSettings> modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
+    ModConfig<InternationalSettings> modConfig;
     public static DayTimeAssembly Instance;
 
     private void OnStateChange(KMGameInfo.State state)
