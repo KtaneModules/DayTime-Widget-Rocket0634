@@ -34,7 +34,7 @@ public class DayTimeWidget : MonoBehaviour
     private List<Func<bool>> func;
     InternationalSettings Settings = new InternationalSettings();
 
-    void Start()
+    void Awake()
     {
         var modConfig = new ModConfig<InternationalSettings>("InternationalSettings");
         Settings = modConfig.Settings;
@@ -151,7 +151,7 @@ public class DayTimeWidget : MonoBehaviour
     {
         var order = widgetData.monthColor == 0 ? widgetData.numberMonth + "-" + widgetData.numberDay + " (MM/DD)" : widgetData.numberDay + "-" + widgetData.numberMonth + " (DD/MM)";
         var strings = new[] { "Chosen time: " + time + widgetData.AmPm, "Day of the week: " + (Settings.EnableColors ? "(colors enabled) " : "(colors not enabled) ") + colorNames[widgetData.dayColor] + " " + days[widgetData.wordDay] + "-" + order, "Manufacture Date: " + widgetData.Month + "-" + widgetData.Year, ""};
-        strings[3] = strings[1] + " / " + strings[2];
+        strings[3] = strings[1] + "\n" + strings[2];
         DebugLog(strings[widget]);
     }
 
@@ -234,8 +234,10 @@ public class DayTimeWidget : MonoBehaviour
 
     void DebugLog(string log, params object[] args)
     {
+        var logHeader = string.Format("[DayTime #{0}] ", widgetID);
         var logData = string.Format(log, args);
-        Debug.LogFormat("[DayTime #{0}] {1}", widgetID, logData);
+        logData = logData.Replace("\n", "\n" + logHeader);
+        Debug.LogFormat(logHeader + logData);
     }
 
     static Dictionary<string, object>[] TweaksEditorSettings = new Dictionary<string, object>[]
